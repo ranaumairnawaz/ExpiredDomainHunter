@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. Block access to sensitive system files & directories
+    RewriteRule ^(\.env|composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml|\.git) - [F,L,NC]
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L,NC]
+
+    # 2. Redirect requests that explicitly include /public/ in the URL
+    RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+    RewriteRule ^ %1 [L,NE,R=301]
+
+    # 3. Transparently forward all other requests into the public/ directory
+    RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
